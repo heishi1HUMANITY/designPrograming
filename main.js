@@ -57,12 +57,12 @@ var getParam = function () { return __awaiter(void 0, void 0, void 0, function (
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                c = canvas.createCanvas(320, 240);
+                c = canvas.createCanvas(160, 120);
                 ctx = c.getContext('2d');
                 return [4 /*yield*/, canvas.loadImage(path.join(__dirname, 'uploads', 'tmp.jpg'))];
             case 1:
                 img = _a.sent();
-                ctx.drawImage(img, 0, 0, 320, 240);
+                ctx.drawImage(img, 0, 0, 160, 120);
                 return [4 /*yield*/, faceapi.detectSingleFace(c).withFaceExpressions()];
             case 2:
                 d = _a.sent();
@@ -80,27 +80,30 @@ var max = function (obj) {
     console.log(max);
     return max;
 };
-app.post('/api/dp/', upload.any(), function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var p;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, getParam()];
-            case 1:
-                p = _a.sent();
-                if (p !== null)
-                    res.send(max(p.expressions).join(','));
-                else
-                    res.end();
-                return [2 /*return*/];
-        }
-    });
-}); });
+app.post('/api/dp/', upload.any(), function (req, res) {
+    (function () { return __awaiter(void 0, void 0, void 0, function () {
+        var p;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, getParam()];
+                case 1:
+                    p = _a.sent();
+                    if (p !== null)
+                        res.send(max(p.expressions)[0]);
+                    else
+                        res.end();
+                    return [2 /*return*/];
+            }
+        });
+    }); })();
+});
 app.listen(8080, function () { return console.log('server is working at localhost:8080'); });
 (function () { return __awaiter(void 0, void 0, void 0, function () {
     var Canvas, Image, ImageData;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                require('@tensorflow/tfjs-node');
                 Canvas = canvas.Canvas, Image = canvas.Image, ImageData = canvas.ImageData;
                 faceapi.env.monkeyPatch({ Canvas: Canvas, Image: Image, ImageData: ImageData });
                 return [4 /*yield*/, faceapi.nets.ssdMobilenetv1.loadFromDisk(path.join(__dirname, 'weights'))];

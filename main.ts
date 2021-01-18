@@ -16,10 +16,10 @@ const upload = multer({
 });
 const app = express();
 const getParam = async (): Promise<any> => {
-  const c = canvas.createCanvas(320, 240);
+  const c = canvas.createCanvas(160, 120);
   const ctx = c.getContext('2d');
   const img = await canvas.loadImage(path.join(__dirname, 'uploads', 'tmp.jpg'));
-  ctx.drawImage(img, 0, 0, 320, 240);
+  ctx.drawImage(img, 0, 0, 160, 120);
   const d = await faceapi.detectSingleFace(c).withFaceExpressions();
   return d;
 };
@@ -32,15 +32,18 @@ const max = (obj: object): [string, number] => {
   return max;
 }
 
-app.post('/api/dp/', upload.any(), async (req: any, res: any): Promise<void> => {
-  const p = await getParam();
-  if (p !== null) res.send(max(p.expressions).join(','));
-  else res.end();
+app.post('/api/dp/', upload.any(), (req: Express.Request, res: any): void => {
+  (async () => {
+    const p = await getParam();
+    if (p !== null) res.send(max(p.expressions)[0]);
+    else res.end();
+  })();
 });
 
 app.listen(8080, () => console.log('server is working at localhost:8080'));
 
 (async () => {
+  require('@tensorflow/tfjs-node');
   const { Canvas, Image, ImageData } = canvas;
   faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
   await faceapi.nets.ssdMobilenetv1.loadFromDisk(path.join(__dirname, 'weights'));
