@@ -37,16 +37,21 @@ app.post('/api/dp/', upload.any(), (req: Express.Request, res: any): void => {
     const p = await getParam();
     if (p !== null) res.send(max(p.expressions)[0]);
     else res.end();
-  })();
+  })()
+    .catch(err => {
+      res.status(418);
+      res.send(err);
+    })
 });
 
-app.listen(8080, () => console.log('server is working at localhost:8080'));
+app.listen(3000, () => console.log('server is working at localhost:3000'));
 
-(async () => {
-  require('@tensorflow/tfjs-node');
+(() => {
   const { Canvas, Image, ImageData } = canvas;
   faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
-  await faceapi.nets.ssdMobilenetv1.loadFromDisk(path.join(__dirname, 'weights'));
-  await faceapi.nets.faceExpressionNet.loadFromDisk(path.join(__dirname, 'weights'));
+  Promise.all([
+    faceapi.nets.ssdMobilenetv1.loadFromDisk(path.join(__dirname, 'weights')),
+    faceapi.nets.faceExpressionNet.loadFromDisk(path.join(__dirname, 'weights'))
+  ])
   console.log('faceapi is ready');
 })();

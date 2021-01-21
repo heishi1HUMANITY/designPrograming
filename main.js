@@ -95,25 +95,19 @@ app.post('/api/dp/', upload.any(), function (req, res) {
                     return [2 /*return*/];
             }
         });
-    }); })();
-});
-app.listen(8080, function () { return console.log('server is working at localhost:8080'); });
-(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var Canvas, Image, ImageData;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                require('@tensorflow/tfjs-node');
-                Canvas = canvas.Canvas, Image = canvas.Image, ImageData = canvas.ImageData;
-                faceapi.env.monkeyPatch({ Canvas: Canvas, Image: Image, ImageData: ImageData });
-                return [4 /*yield*/, faceapi.nets.ssdMobilenetv1.loadFromDisk(path.join(__dirname, 'weights'))];
-            case 1:
-                _a.sent();
-                return [4 /*yield*/, faceapi.nets.faceExpressionNet.loadFromDisk(path.join(__dirname, 'weights'))];
-            case 2:
-                _a.sent();
-                console.log('faceapi is ready');
-                return [2 /*return*/];
-        }
+    }); })()
+        .catch(function (err) {
+        res.status(418);
+        res.send(err);
     });
-}); })();
+});
+app.listen(3000, function () { return console.log('server is working at localhost:3000'); });
+(function () {
+    var Canvas = canvas.Canvas, Image = canvas.Image, ImageData = canvas.ImageData;
+    faceapi.env.monkeyPatch({ Canvas: Canvas, Image: Image, ImageData: ImageData });
+    Promise.all([
+        faceapi.nets.ssdMobilenetv1.loadFromDisk(path.join(__dirname, 'weights')),
+        faceapi.nets.faceExpressionNet.loadFromDisk(path.join(__dirname, 'weights'))
+    ]);
+    console.log('faceapi is ready');
+})();
